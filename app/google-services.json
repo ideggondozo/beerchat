@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "493208613744",
+    "firebase_url": "https://beercheer-43c4c.firebaseio.com",
+    "project_id": "beercheer-43c4c",
+    "storage_bucket": "beercheer-43c4c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493208613744:android:c1fb527d1d9c18b5",
+        "android_client_info": {
+          "package_name": "com.mmsone.beercheer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493208613744-5ojms8iupsc7844ofg1n9ofj79evmie7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mmsone.beercheer",
+            "certificate_hash": "a6e72e4b05dd8596cb195a41ac2e6a25f2f005d4"
+          }
+        },
+        {
+          "client_id": "493208613744-qb09lvihk5s9mgjjfmbti3i9m4vhtqrb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSCnhNad-BXQkyOaJY6nsoKbaHk2xT9AQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493208613744-qb09lvihk5s9mgjjfmbti3i9m4vhtqrb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

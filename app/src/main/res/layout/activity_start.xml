@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:background="@android:color/holo_orange_dark"
+
+    tools:context=".StartActivity">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="@string/beerchat"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="70sp"
+     />
+    <Button
+        android:id="@+id/startLoginButton"
+        android:layout_width="256dp"
+        android:layout_height="69dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="80dp"
+        android:background="@android:color/holo_red_dark"
+        android:text="@string/already_have"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:layout_gravity="center"
+
+        />
+    <Button
+        android:id="@+id/startRegButton"
+        android:layout_width="256dp"
+        android:layout_height="69dp"
+        android:layout_marginBottom="84dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/registration"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+       />
+
+
+</LinearLayout>
