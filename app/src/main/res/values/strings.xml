@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">BeerCheer</string>
+    <string name="app_name">firebasefriends</string>
+    <string name="login_to_your_account">Login to your account</string>
+    <string name="already_have">Already Have</string>
+    <string name="registration">Registration</string>
+    <string name="beerchat">BeerChat</string>
+    <string name="create_new_account">Create New Account</string>
+    <string name="create_account">Create Account</string>
+    <string name="passw">Password</string>
+    <string name="email">Email</string>
+    <string name="disp_name">Display Name</string>
+    <string name="log_out">Log Out</string>
+    <string name="name">Name</string>
+    <string name="status">Status</string>
+    <string name="send">Send</string>
 </resources>
