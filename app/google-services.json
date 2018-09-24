@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "493208613744-4016fktdjl43n4dceoku5fvhu8fjmdf7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mmsone.beercheer",
+            "certificate_hash": "a1c477135d4c38e73c4c147a668cddb9e9b7d931"
+          }
+        },
+        {
           "client_id": "493208613744-qb09lvihk5s9mgjjfmbti3i9m4vhtqrb.apps.googleusercontent.com",
           "client_type": 3
         }

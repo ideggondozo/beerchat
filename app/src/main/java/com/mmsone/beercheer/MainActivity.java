@@ -39,22 +39,39 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.jboss.aerogear.unifiedpush.DefaultPushSender;
+import org.jboss.aerogear.unifiedpush.PushSender;
+import org.jboss.aerogear.unifiedpush.message.UnifiedMessage;
+
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
+
 
     private DatabaseReference ref;
     private List<User> userList = new ArrayList<User>();
     private RecyclerView recyclerView;
     FirebaseFirestore db;
+    private final PushSender sender =
+            DefaultPushSender.withRootServerURL("http://192.168.1.31:8080/ag-push/")
+                    .pushApplicationId("c1401743-9f90-4773-9c05-c984e3573de3")
+                    .masterSecret("38395136-aa5e-4e13-94e0-a658b42c5973")
+                    .build();
 
     private DatabaseReference mNotificationDatabase;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private List<User> selectedUsers = new ArrayList<>();
 
@@ -89,16 +106,17 @@ public class MainActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.sendButton);
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        ((BeerChatApplication)getApplication()).registerPush(currentUser.getUid());
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().equals("push")){
                     String message = intent.getStringExtra("message");
-                    showNotification("BeerApp", message);
                 }
             }
         };
+
 
 
         if( currentUser == null){
@@ -107,48 +125,8 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-
-
-
-
-//        db = FirebaseFirestore.getInstance();
-//        db.collection("friends")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Log.d("Here we go", document.getId() + " => " + document.getData());
-//                                User user = new User(document.get("name").toString(), document.get("profession").toString());
-//                                userList.add(user);
-//                            }
-//                            UserAdapter userAdapter = new UserAdapter(userList);
-//                            recyclerView.setAdapter(userAdapter);
-//                            Toast.makeText(getApplicationContext(), String.valueOf(userList.size()).toString(), Toast.LENGTH_LONG).show();
-//                        } else {
-//                            Log.w("Nope", "Error getting documents.", task.getException());
-//                        }
-//                    }
-//                });
     }
 
-    private void showNotification(String title, String message) {
-
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder b = new NotificationCompat.Builder(getApplicationContext());
-        b.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setContentIntent(contentIntent);
-
-        NotificationManager notificationManager = (NotificationManager)getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1,b.build());
-    }
 
     @Override
     public void onStart() {
@@ -184,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                             userList.clear();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d("Here we go", document.getId() + " => " + document.getData());
-                                User user = new User(document.get("name").toString(), document.get("profession").toString(), mAuth.getCurrentUser().getUid().toString());
+                                User user = new User(document.get("name").toString(), document.get("status").toString(), document.get("uid").toString());
 
                                 userList.add(user);
                             }
@@ -235,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -248,51 +227,50 @@ public class MainActivity extends AppCompatActivity {
 
         if(item.getItemId() == R.id.sendButton){
 
-//            Toast.makeText(getApplicationContext(), String.valueOf(userList.get(0).isSelected()).toString(), Toast.LENGTH_LONG).show();
-//            FirebaseMessaging.getInstance().subscribeToTopic("beerchat")
-//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<Void> task) {
-//                            String msg = "megjött";
-//                            if (!task.isSuccessful()) {
-//                                msg = "nem jött meg";
-//                            }
-//                            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+            reference.child("token").setValue(FirebaseInstanceId.getInstance()
+                    .getToken());
 
-            Iterator it = selectedUsers.iterator();
 
-            HashMap<String,String> notificationData = new HashMap<>();
-            notificationData.put("from", FirebaseAuth.getInstance().getCurrentUser().getUid());
-            notificationData.put("type", "Beer");
+//
+//
+//            String senderID = mAuth.getCurrentUser().getUid();
 
-            String senderID = mAuth.getCurrentUser().getUid();
 
-            while (it.hasNext()) {
-                User u = (User) it.next();
-                mNotificationDatabase.child(u.getUID()).push().setValue(notificationData);
+            List<String> aliases = new ArrayList<>();
 
-                FirebaseMessaging.getInstance().subscribeToTopic(u.getUID());
-
-                FirebaseMessaging fm = FirebaseMessaging.getInstance();
-                fm.send(new RemoteMessage.Builder(senderID + "\"@gcm.googleapis.com\"")
-                        .setMessageId(u.getUID())
-                        .addData("message", "Hello World")
-                        .build());
+            for(User u : selectedUsers){
+                aliases.add(u.getUID());
             }
 
-            System.out.println( userList.toString());
-            System.out.println("\n\n Selected: \n\n" + selectedUsers.toString());
+            final UnifiedMessage unifiedMessage = UnifiedMessage.withMessage()
+                    .criteria()
+                        .aliases(aliases)
+                    .message()
+                    .alert("Das boot")
+                    .build();
+
+
+            executor.submit(() -> sender.send(unifiedMessage, () -> Log.d("MainActivity", "Push message sent")));
+//
+
+
         }
 
         return true;
     }
-}
 
+    public static void sendNotificationToUser(String user, final String message) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("notificationRequests");
+
+        Map notification = new HashMap<>();
+        notification.put("username", user);
+        notification.put("message", message);
+
+        ref.push().setValue(notification);
+    }
+}
 /*
-nem müködik a checkbox
-nem ugrál, csak nem jegyzi meg hogy ki van jelezve és ki nem
-holnapra dolog
+a push notikat nem kapja meg a másik
 
  */

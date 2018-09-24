@@ -98,45 +98,42 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void register_user(final String display_name, String email, String password) {
 
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
 
 
-                    FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
-                    String uid = current_user.getUid();
+                FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
+                String uid = current_user.getUid();
 
 
 //                    String device_token = FirebaseInstanceId.getInstance().getToken();
 
-                    HashMap<String, String> user = new HashMap<>();
-                    user.put("name", display_name);
-                    user.put("profession", "Ki kell törölni");
-                    user.put("uid", mAuth.getCurrentUser().getUid());
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                HashMap<String, String> user = new HashMap<>();
+                user.put("name", display_name);
+                user.put("status", "Ki kell törölni");
+                user.put("uid", mAuth.getCurrentUser().getUid());
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
-                    db.collection("friends")
-                            .add(user)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    Toast.makeText(getApplicationContext(), "Added", Toast.LENGTH_LONG).show();
-                                    Intent mainIntent = new Intent( RegisterActivity.this, MainActivity.class);
-                                    startActivity(mainIntent);
-                                    finish();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), "Failed to add", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                db.collection("friends")
+                        .add(user)
+                        .addOnSuccessListener(documentReference -> {
+                            Toast.makeText(getApplicationContext(), "Added", Toast.LENGTH_LONG).show();
+                            Intent mainIntent = new Intent( RegisterActivity.this, MainActivity.class);
+                            startActivity(mainIntent);
+                            finish();
+                        }).addOnFailureListener(e -> {
+                            Toast.makeText(getApplicationContext(), "Failed to add", Toast.LENGTH_LONG).show();
+                            Log.e("ERRORMESSAGE",e.getMessage());
+
+                });
 
 //
 
-                }
+            }
+            else
+            {
+                Log.e("ERRORMESSAGE",task.getException().getLocalizedMessage());
             }
         });
     }

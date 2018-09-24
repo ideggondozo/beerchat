@@ -57,9 +57,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                     selectedUsers.add(user);
                     holder.selectButton.setText("Selected");
                 }
+
+                mCallback.onSucces(selectedUsers);
             }
         });
-        mCallback.onSucces(selectedUsers);
+
     }
 
     @Override
